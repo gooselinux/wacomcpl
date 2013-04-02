@@ -1,0 +1,29 @@
+From c68fd986415fff836ed1521047d2244c2abe872f Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Wed, 25 Aug 2010 12:59:01 +1000
+Subject: [PATCH 04/14] TwinView returns strings, not numbers.
+
+Compare against the strings when selecting which one should be selected as
+default in the combo box.
+---
+ wacomcpl-exec |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index bf3ec60..9659216 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -1589,8 +1589,9 @@ proc initialSet {} {
+     set tv(5) "LeftOf"
+ 
+     for { set i 0 } { $i < 6 } { incr i 1 } {
+-	if { $tvID == $i } {
++	if { ![ string compare -nocase $tvID $tv($i) ] } {
+ 	    set tvd $tv($i)
++	    break
+ 	}
+     }
+ 
+-- 
+1.7.2.2
+

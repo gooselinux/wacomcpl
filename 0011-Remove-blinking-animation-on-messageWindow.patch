@@ -1,0 +1,38 @@
+From d9d7393cfab447adb6f28971c6772c0d60d4c03d Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Thu, 26 Aug 2010 14:24:38 +1000
+Subject: [PATCH 11/14] Remove blinking animation on messageWindow
+
+Dismissing the window before the animation is over leads to an error
+on the console.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ wacomcpl-exec |   11 +----------
+ 1 files changed, 1 insertions(+), 10 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index 9414f09..65d2c76 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -522,16 +522,7 @@ proc messageWindow { tString mString } {
+ 		-command "destroy .mWindow; set ok 1"
+     .mWindow.text insert end $mString
+     pack .mWindow.text .mWindow.dismiss
+-    #
+-    # Do some spiffy animation to draw attention !
+-    for { set i 0 } { $i < 10 } { incr i } {
+-	after 100
+-	.mWindow.text configure -background white
+-	update
+-	after 100
+-	.mWindow.text configure -background gray
+-	update
+-    }
++
+     tkwait variable ok 
+ }
+ 
+-- 
+1.7.2.2
+

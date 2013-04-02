@@ -1,0 +1,54 @@
+From ccdbcb77268891c4bad27c10648761e108f7c41c Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Tue, 24 Aug 2010 14:14:43 +1000
+Subject: [PATCH 05/14] Purge "Xinerama" option, the driver doesn't handle it.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ wacomcpl-exec |   16 ++++++----------
+ 1 files changed, 6 insertions(+), 10 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index 9659216..6748489 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -1582,20 +1582,19 @@ proc initialSet {} {
+ 
+     label $currentW.f.tv -text "TwinView Setup: "
+     set tv(0) "None"
+-    set tv(1) "Xinerama"
+-    set tv(2) "Vertical"
+-    set tv(3) "Horizontal"
+-    set tv(4) "AboveOf"
+-    set tv(5) "LeftOf"
++    set tv(1) "Vertical"
++    set tv(2) "Horizontal"
++    set tv(3) "AboveOf"
++    set tv(4) "LeftOf"
+ 
+-    for { set i 0 } { $i < 6 } { incr i 1 } {
++    for { set i 0 } { $i < 5 } { incr i 1 } {
+ 	if { ![ string compare -nocase $tvID $tv($i) ] } {
+ 	    set tvd $tv($i)
+ 	    break
+ 	}
+     }
+ 
+-    tk_optionMenu $currentW.f.tvmenu tvd $tv(0) $tv(1) $tv(2) $tv(3) $tv(4) $tv(5)
++    tk_optionMenu $currentW.f.tvmenu tvd $tv(0) $tv(1) $tv(2) $tv(3) $tv(4)
+     grid $currentW.f.tv -row 4 -column 0 
+     grid $currentW.f.tvmenu -row 4 -column 1
+ 
+@@ -1635,9 +1634,6 @@ proc updateSet {} {
+     if { ![ string compare $tv "None" ] } {
+ 	set tv "none"
+     }
+-    if { ![ string compare $tv "Xinerama" ] } {
+-	set tv "xinerama"
+-    }
+     if { ![ string compare $tv "Horizontal" ] } {
+ 	set tv "horizontal"
+     }
+-- 
+1.7.2.2
+

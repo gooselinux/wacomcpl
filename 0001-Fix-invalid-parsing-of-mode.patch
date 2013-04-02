@@ -1,0 +1,35 @@
+From 1367233748c64fe5af3f977e5257398b18632706 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Tue, 26 Oct 2010 11:54:02 +1000
+Subject: [PATCH 1/6] Fix invalid parsing of mode.
+
+getOptionDefault(dev, Mode) returns "Relative" or "Absolute" and cannot be
+added with 0/1. Replace with a string compare.
+I have no idea what this line is trying to do though.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ wacomcpl-exec |    7 ++++++-
+ 1 files changed, 6 insertions(+), 1 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index 6b60fdd..6a1adf6 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -1093,7 +1093,12 @@ proc defaultButton {} {
+     set type $getDeviceModel($device,type)
+ 
+     if { !$isLCD($model) && [ string compare $type "pad" ] } { 
+-	set dmv $dm([ expr $getOptionDefault($device,Mode)+1 ])
++	# dmv is the return value of the tk_optionMenu that displays the
++	# mode options. yes, indeed. whoop. dee. doo.
++	set mode $getOptionDefault($device,Mode)
++	if { $mode == "Absolute" } { set mode 1 }
++	if { $mode == "Relative" } { set mode 0 }
++	set dmv $dm([ expr $mode + 1 ])
+     }
+ 
+     if { ![ string compare $type "stylus" ] } {
+-- 
+1.7.1
+

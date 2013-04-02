@@ -1,0 +1,34 @@
+From 87fa6845812a5bbb901529963944e8d966eaea9c Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Thu, 26 Aug 2010 14:25:22 +1000
+Subject: [PATCH 12/14] If TVResolution isn't set, show an error and exit.
+
+We can't really calibrate if we don't have the coordinates required to
+calibrate the screen for. So just exit, instead of dividing by zero lateron.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ wacomcpl-exec |    7 +++++++
+ 1 files changed, 7 insertions(+), 0 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index 65d2c76..42e717a 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -869,6 +869,13 @@ proc createScreenList { dev } {
+ 	set s1x [ lindex $tvres 0 ]
+ 	set s1y [ lindex $tvres 1 ]
+ 
++	if { $s0x == 0 && $s0y == 0 && $s1x == 0 && $s1y == 0 } {
++	    messageWindow "Error" "\n\n Device $dev configured \n\
++			  for TwinView but option TVResolution \n\
++			  is not set.\n\
++			  Please set TVResolution and try again."
++			  exit 1
++	}
+ 
+ 	# getScreenInfo for some reason stores as bottom x/y top x/y instead
+ 	# of the other way round.  Usage of s() is top x/y bottom x/y though.
+-- 
+1.7.2.2
+

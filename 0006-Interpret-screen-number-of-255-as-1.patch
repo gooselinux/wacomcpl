@@ -1,0 +1,26 @@
+From 514fa48b22e2a8508ec422cf48a4d5d80ed03b97 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Wed, 25 Aug 2010 10:27:00 +1000
+Subject: [PATCH 06/14] Interpret screen number of 255 as -1.
+
+8 bit unsigned properties don't give us a -1 screen.
+---
+ wacomcpl-exec |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index 6748489..96223ac 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -1549,7 +1549,7 @@ proc initialSet {} {
+     set tvID $getOption($device,TwinView)
+     set snd $getOption($device,Screen_no)
+ 
+-    if { $snd == -1 } {
++    if { $snd == -1 || $snd == 255} {
+ 	set snd "Desktop" 
+     } else {
+ 	set snd "Screen$snd"
+-- 
+1.7.2.2
+

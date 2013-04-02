@@ -1,0 +1,26 @@
+From 8a04e691a31d928f0e7964eac0762bf62e8345e3 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Tue, 17 Aug 2010 14:41:50 +1000
+Subject: [PATCH] Fix typo - mode should be $mode.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ wacomcpl-exec |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index 1c908a1..858ae92 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -421,7 +421,7 @@ proc Calibration {} {
+     set tvID $getOption($device,TwinView)
+ 
+     if { $calibration_sequence_only == 0 } {
+-	if { $mode != 1 && mode != "Absolute" } {
++	if { $mode != 1 && $mode != "Absolute" } {
+ 	    disableButtons
+ 	    messageWindow "Warning " "\n\nDevice $device is in relative mode. \n\
+ 		You can calibrate $device only when it is in absolute mode. \n\
+-- 
+1.7.1
+

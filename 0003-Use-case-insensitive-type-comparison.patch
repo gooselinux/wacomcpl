@@ -1,0 +1,154 @@
+From ed0014749360f71448fdd304bd4c2b56b68b7d93 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Tue, 26 Oct 2010 13:06:05 +1000
+Subject: [PATCH 3/6] Use case-insensitive type comparison.
+
+Type names are all uppercase now.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ wacomcpl-exec |   32 ++++++++++++++++----------------
+ 1 files changed, 16 insertions(+), 16 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index ccc0b17..c57a94a 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -366,7 +366,7 @@ proc calibrationSequence {which xDev yDev} {
+ 
+ 	# send the same data to the associated eraser if it is a stylus
+ 	set type $getDeviceModel($device,type)
+-	if { ![ string compare $type "stylus" ] } {
++	if { ![ string compare -nocase $type "stylus" ] } {
+ 	    set eraser $getDeviceModel($device,eraser)
+ 	    if { [ string compare $eraser $device ] && $eraser != "" } {
+ 		updateWacomrc $eraser topx $xDevMin
+@@ -785,13 +785,13 @@ proc createDeviceList {} {
+ 
+     foreach dev $deviceList {
+ 	set type $getDeviceModel($dev,type)
+-	if { ![string compare $type "eraser"] } {
++	if { ![string compare -nocase $type "eraser"] } {
+ 	    set model $getDeviceModel($dev,model)
+ 	    foreach dev1 $deviceList {
+ 		set type1 $getDeviceModel($dev1,type)
+ 		set model1 $getDeviceModel($dev1,model)
+ 		if { ( $model == $model1 ) &&
+-			 ![string compare $type1 "stylus"] } {
++			 ![string compare -nocase $type1 "stylus"] } {
+ 		    set getDeviceModel($dev1,eraser) $dev
+ 		}
+ 	    }
+@@ -1050,7 +1050,7 @@ proc updateButton {} {
+ 	}
+     }
+ 
+-    if { !$isLCD($model) && [string compare $type "pad"] } { 
++    if { !$isLCD($model) && [string compare -nocase $type "pad"] } { 
+ 	set mode [ $currentW.f.mode cget -text ]
+ 	updateWacomrc $device mode $mode
+ 	if { $mode == $dm(1) } {
+@@ -1060,7 +1060,7 @@ proc updateButton {} {
+ 	}
+     }
+ 
+-    if { ![ string compare $type "stylus" ] } {
++    if { ![ string compare -nocase $type "stylus" ] } {
+ 	    set smode [ $currentW.f.smode cget -text ]
+ 	    if { $smode == $sm(1) } {
+ 		updateWacomrc $device TPCButton off
+@@ -1092,7 +1092,7 @@ proc defaultButton {} {
+     set model $getDeviceModel($device,model)
+     set type $getDeviceModel($device,type)
+ 
+-    if { !$isLCD($model) && [ string compare $type "pad" ] } { 
++    if { !$isLCD($model) && [ string compare -nocase $type "pad" ] } { 
+ 	# dmv is the return value of the tk_optionMenu that displays the
+ 	# mode options. yes, indeed. whoop. dee. doo.
+ 	set mode $getOptionDefault($device,Mode)
+@@ -1101,7 +1101,7 @@ proc defaultButton {} {
+ 	set dmv $dm([ expr $mode + 1 ])
+     }
+ 
+-    if { ![ string compare $type "stylus" ] } {
++    if { ![ string compare -nocase $type "stylus" ] } {
+ 	set smv $sm([ expr $getOptionDefault($device,TPCButton)+1 ])
+     }
+ }
+@@ -1111,16 +1111,16 @@ proc getNumButton { type } {
+     
+     set Option(1) "Button1"
+     set t 1
+-    if { [ string compare $type "eraser" ] } {
++    if { [ string compare -nocase $type "eraser" ] } {
+ 	set Option(2) "Button2"
+ 	set Option(3) "Button3"
+ 	set t [ expr ($t+2) ]
+-	if { [ string compare $type "stylus" ] } {
++	if { [ string compare -nocase $type "stylus" ] } {
+ 	    set Option(4) "Button4"
+ 	    set Option(5) "Button5"
+ 	    set t [ expr ($t+2) ]
+ 	}
+-	if { ![ string compare $type "pad" ] } {
++	if { ![ string compare -nocase $type "pad" ] } {
+ 	    set model $getDeviceModel($device,model)
+ 	    set t $numPadButtons($model)
+ 	    for { set i 6 } { $i <= $t } { incr i 1 } {
+@@ -1187,7 +1187,7 @@ proc initialButton {} {
+     set type $getDeviceModel($device,type)
+     set t $numButton
+ 
+-    if { [ string compare $type "pad" ] } {
++    if { [ string compare -nocase $type "pad" ] } {
+ 	set t [expr ($t+1)]
+ 	set Option($t) "Mode"
+ 	set t [expr ($t+1)]
+@@ -1195,7 +1195,7 @@ proc initialButton {} {
+     }
+     getDeviceOptionProc $device $t
+ 
+-    if { [ string compare $type "pad" ] } {
++    if { [ string compare -nocase $type "pad" ] } {
+     	displayMode
+     }
+ 
+@@ -1207,7 +1207,7 @@ proc initialButton {} {
+     }
+ 
+     # then touch strip
+-    if { ![ string compare $type "pad" ] } {
++    if { ![ string compare -nocase $type "pad" ] } {
+ 	expressKeys
+     } else {
+ 	set numStrips 0
+@@ -1221,7 +1221,7 @@ proc displayMode {} {
+     set model $getDeviceModel($device,model)
+     set type $getDeviceModel($device,type)
+ 
+-    if { !$isLCD($model) && [ string compare $type "pad" ]  } { 
++    if { !$isLCD($model) && [ string compare -nocase $type "pad" ]  } {
+ 	set mode $getOption($device,Mode)
+ 	if { $mode == "Absolute" } { set mode 1 }
+ 	if { $mode == "Relative" } { set mode 0 }
+@@ -1233,7 +1233,7 @@ proc displayMode {} {
+ 	grid $currentW.f.modeL -row 4 -column 0
+     }
+ 
+-    if { ![ string compare $type "stylus" ] } {
++    if { ![ string compare -nocase $type "stylus" ] } {
+ 	set smv $sm([ expr $getOption($device,TPCButton)+1 ])
+ 	tk_optionMenu $currentW.f.smode smv $sm(1) $sm(2)
+ 	label $currentW.f.smodeL -text "Side Switch Mode: "
+@@ -1403,7 +1403,7 @@ proc addMenu { curb } {
+ 	set oldKeys($spName($curb)) ""
+     }
+ 
+-    if { [string compare $type "pad"] } {
++    if { [string compare -nocase $type "pad"] } {
+ 	set bmenu [ tk_optionMenu $currentW.f.$curb db$curb $db(1) $db(2) \
+ 		$db(3) $db(4) $db(5) $db($doubleClickB) $db($modeToggleB) \
+ 		$db($displayToggleB) $db($screenToggleB) $db($ignoreButton) ]
+-- 
+1.7.1
+

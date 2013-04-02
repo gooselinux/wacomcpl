@@ -1,0 +1,72 @@
+From a25bac16fc6eb157dc88039633c727de820febb1 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Fri, 10 Sep 2010 13:28:29 +1000
+Subject: [PATCH] If TwinView is selected, try to guess the TVResolution.
+
+Using the output of xdpyinfo and optimism.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ wacomcpl-exec |   39 +++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 39 insertions(+), 0 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index 6e8ff02..6cf9a2c 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -1676,6 +1676,42 @@ proc initialSet {} {
+     grid $currentW.f.message4 -row 3 -column 1
+ }
+ 
++proc guessTVResolution { device tv} {
++    # xdpyinfo output is e.g. #head0: 1280x1024 @ 0,0
++    # extract the resolution into a "1280 1024 0 0" string
++    set regex { s/.* \([0-9]\+\)x\([0-9]\+\) @ \([0-9]\+\),\([0-9]\+\).*/\1 \2 \3 \4/ }
++
++    set head0 [ exec xdpyinfo -ext XINERAMA | grep "head #0" | sed -e $regex ]
++    set head1 [ exec xdpyinfo -ext XINERAMA | grep "head #1" | sed -e $regex ]
++
++    catch {
++	set tvres0 [split $head0 " "]
++	set tvres1 [split $head1 " "]
++
++	set w1 [ lindex $tvres0 0 ]
++	set h1 [ lindex $tvres0 1 ]
++	set w2 [ lindex $tvres1 0 ]
++	set h2 [ lindex $tvres1 1 ]
++
++	set off1 [ lindex $tvres0 2 ]
++	set off2 [ lindex $tvres0 3 ]
++
++	if { $off1 != 0 || $off2 != 0 } {
++	    # first screen has non-zero offset, swap around
++	    set tmp $w1
++	    set w1 $w2
++	    set w2 $tmp
++
++	    set tmp $h1
++	    set h1 $h2
++	    set h2 $tmp
++	}
++
++	exec xsetwacom set "$device" TVResolution "$w1 $h1 $w2 $h2"
++	updateWacomrc $device TVResolution "$w1 $h1 $w2 $h2"
++    }
++}
++
+ proc updateSet {} {
+     global device currentW tvd snd tvID
+ 
+@@ -1717,6 +1753,9 @@ proc updateSet {} {
+     if { $tv != $tvID } {
+ 	updateWacomrc $device TwinView $tv
+ 	set getOption($device,TwinView) $tv
++	if { $tv != "none" } {
++	    guessTVResolution $device $tv
++	}
+     }
+ 
+     closeSubWindow
+-- 
+1.7.2.3
+

@@ -1,0 +1,32 @@
+From e11e5df6e5c29b01bb05306816b256fc2b2caf4d Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Fri, 10 Sep 2010 13:31:06 +1000
+Subject: [PATCH] Append, not prepend wacomcplrc commands.
+
+This is necessary for TwinView. If TwinView is enabled and one of
+TVResolution, etc. is set, the TwinView setting must be the first in the
+file - otherwise the configurations for the others return BadValue.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ wacomcpl-exec |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index 6cf9a2c..6b60fdd 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -122,8 +122,8 @@ proc updateWacomrc {device option value} {
+     } else {
+ 	file copy -force $config_file $config_file~
+ 	exec sed -e "/xsetwacom set \"$device\" $option /d" < $config_file > /tmp/wacomcpl.tmp
+-	exec echo "xsetwacom set \"$device\" $option \"$value\"" > $config_file
+-	exec cat /tmp/wacomcpl.tmp >> $config_file
++	exec cat /tmp/wacomcpl.tmp > $config_file
++	exec echo "xsetwacom set \"$device\" $option \"$value\"" >> $config_file
+ 	file delete -force /tmp/wacomcpl.tmp
+     }
+     if { $option == "PressCurve" } {
+-- 
+1.7.2.3
+

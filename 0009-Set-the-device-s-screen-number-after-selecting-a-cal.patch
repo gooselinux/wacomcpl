@@ -1,0 +1,24 @@
+From 426ca0cb0002862f3cf77266f92210258900a982 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Thu, 26 Aug 2010 13:26:48 +1000
+Subject: [PATCH 09/14] Set the device's screen number after selecting a calibration screen.
+
+---
+ wacomcpl-exec |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index 37a9a47..47b7353 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -553,6 +553,7 @@ proc updateScreenList {} {
+ 		set i $numScreens($device)
+ 	    }
+ 	}
++	exec xsetwacom set "$device" Screen_No $currentScreen
+     }
+     updateCurrentScreenInfo
+     set origin_x [ expr $screenX_org+$screenWidth/2-$screenWidth/4 ]
+-- 
+1.7.2.2
+

@@ -1,0 +1,41 @@
+From 60634d97d5f72624615bf0848c639c548748e958 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Thu, 28 Oct 2010 15:29:35 +1000
+Subject: [PATCH] Fix "reset" handling for displaytoggle, modetoggle and keys.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ wacomcpl-exec |   13 ++++++++++++-
+ 1 files changed, 12 insertions(+), 1 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index e56d936..d2cbe0e 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -1067,11 +1067,22 @@ proc defaultButton {} {
+     global db11 db12 db13 db14 isLCD
+     global dm sm dmv smv numButton startS numStrips spName
+     global device getOptionDefault getDeviceModel
+-    global ignoreButton
++    global ignoreButton keystrokeB modeToggleB displayToggleB
+ 
+     for { set i 1 } { $i <= $numButton } { incr i 1 } {
+ 	set btn $getOptionDefault($device,$spName($i))
+ 	if { $btn == 0 } { set btn $ignoreButton }
++	if { ![string compare -nocase -length 4 CORE $btn ]  ||
++		    ![string compare -nocase -length 3 KEY $btn ] ||
++		    ![string compare -nocase -length 6 BUTTON $btn ] } {
++	    set btn $keystrokeB
++	}
++	if { ![string compare -nocase -length 10 MODETOGGLE $btn ] } {
++	    set btn $modeToggleB
++	}
++	if { ![string compare -nocase -length 13 DISPLAYTOGGLE $btn ] } {
++	    set btn $displayToggleB
++	}
+ 	set db$i $db($btn)
+     }
+ 
+-- 
+1.7.1
+

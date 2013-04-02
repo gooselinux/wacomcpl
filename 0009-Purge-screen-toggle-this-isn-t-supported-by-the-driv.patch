@@ -1,0 +1,113 @@
+From ac0e2626dcaa21df77077d5642ed7021e9b92f1d Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Thu, 28 Oct 2010 15:28:08 +1000
+Subject: [PATCH 09/10] Purge screen toggle, this isn't supported by the driver.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ wacomcpl-exec |   22 +++++++---------------
+ 1 files changed, 7 insertions(+), 15 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index 35c060e..e56d936 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -67,7 +67,6 @@ set modeToggleB 33
+ set ignoreButton 34
+ set doubleClickB 35
+ set displayToggleB 36
+-set screenToggleB 37
+ set keystrokeB 38
+ set maxNumTablets 227
+ set numControls 0
+@@ -597,7 +596,7 @@ proc disableButtons {} {
+ # partially filled by hand??
+ proc getDeviceOptionProc { dev i } {
+     global getOption getOptionDefault Option oldKeys modeToggleB
+-    global displayToggleB ignoreButton screenToggleB keystrokeB
++    global displayToggleB ignoreButton keystrokeB
+     global numStrips numControls numButton spName
+ 
+     for { set j 1 } { $j < [ expr $i+1 ] } { incr j 1 } {
+@@ -677,9 +676,6 @@ proc getDeviceOptionProc { dev i } {
+ 		    if { ![string compare -nocase -length 13 DISPLAYTOGGLE $value ] } {
+ 			set getOption($dev,$Option($j)) $displayToggleB
+ 		    }
+-		    if { ![string compare -nocase -length 12 SCREENTOGGLE $value ] } {
+-			set getOption($dev,$Option($j)) $screenToggleB
+-		    }
+ 		    if { $value == 0 } {
+ 			set getOption($dev,$Option($j)) $ignoreButton
+ 		    }
+@@ -989,7 +985,7 @@ proc updateButton {} {
+     global device getDeviceModel sm getOption spName isLCD
+     global dm currentW oldKeys numButton cKeys numStrips startS
+     global modeToggleB ignoreButton keystrokeB
+-    global displayToggleB screenToggleB
++    global displayToggleB
+ 
+     set type $getDeviceModel($device,type)
+     set model $getDeviceModel($device,model)
+@@ -1021,9 +1017,6 @@ proc updateButton {} {
+ 	    "Display Toggle"
+ 		{ set j $displayToggleB
+ 		 set v "DisplayToggle 1" }
+-	    "Screen Toggle"
+-		{ set j $screenToggleB
+-		 set v "ScreenToggle 1" }
+ 	    "KeyStroke"
+ 		{ set j $keystrokeB 
+ 		 if { $cKeys($spName($k)) == "" } {
+@@ -1338,7 +1331,7 @@ proc expressKeys { } {
+     global db11 db12 db13 db14 startS 
+     global currentW device numButton spName numStrips
+     global getDeviceModel cKeys oldKeys getOption
+-    global displayToggleB ignoreButton keystrokeB screenToggleB
++    global displayToggleB ignoreButton keystrokeB
+     global numPadRings numPadStrips numPadAbsW numPadRelW
+ 
+     set name(1) "Wheel Up"
+@@ -1394,7 +1387,7 @@ proc addMenu { curb } {
+     global db db1 db2 db3 db4 db5 db6 db7 db8 db9 db10 
+     global db11 db12 db13 db14 currentW device spName
+     global getOption getDeviceModel cKeys oldKeys 
+-    global keystrokeB screenToggleB
++    global keystrokeB
+     global displayToggleB ignoreButton modeToggleB
+ 
+     set model $getDeviceModel($device,model)
+@@ -1412,12 +1405,12 @@ proc addMenu { curb } {
+     if { [string compare -nocase $type "pad"] } {
+ 	set bmenu [ tk_optionMenu $currentW.f.$curb db$curb $db(1) $db(2) \
+ 		$db(3) $db(4) $db(5) $db($modeToggleB) \
+-		$db($displayToggleB) $db($screenToggleB) $db($ignoreButton) ]
++		$db($displayToggleB) $db($ignoreButton) ]
+ 	set i 9
+     } else {
+ 	set bmenu [ tk_optionMenu $currentW.f.$curb db$curb $db(1) $db(2) \
+ 		$db(3) $db(4) $db(5) $db($displayToggleB) \
+-		$db($screenToggleB) $db($ignoreButton) ]
++		$db($ignoreButton) ]
+ 	set i 8
+     }
+ 
+@@ -2225,7 +2218,7 @@ proc createControls { } {
+     global oldKeys numStrips
+     global workingTags db dm sm wName bName numButton
+     global ignoreButton displayToggleB
+-    global modeToggleB keystrokeB screenToggleB 
++    global modeToggleB keystrokeB
+ 
+     createDeviceListPanel 
+     updateModelInfo
+@@ -2242,7 +2235,6 @@ proc createControls { } {
+     set db(10) "Ignore"
+     set db($modeToggleB) "Mode Toggle"
+     set db($displayToggleB) "Display Toggle"
+-    set db($screenToggleB) "Screen Toggle"
+     set db($ignoreButton) "Ignore"
+     set db($keystrokeB) "KeyStroke"
+     set dm(1) "Relative"
+-- 
+1.7.1
+

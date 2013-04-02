@@ -1,0 +1,26 @@
+From 714a0b344c517fe42cf058ba783659bada3accb9 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Tue, 24 Aug 2010 14:25:32 +1000
+Subject: [PATCH 02/14] Fix typo - don't use $variablename when setting a variable.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ wacomcpl-exec |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index 858ae92..d23b943 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -841,7 +841,7 @@ proc createScreenList { dev } {
+     if { $num_screen == 1 } {
+ 	set twinview [ exec xsetwacom get "$dev" TwinView ]
+ 	if { $twinview != "none" } {
+-	    set $num_screen 2
++	    set num_screen 2
+ 	}
+     }
+ 
+-- 
+1.7.2.2
+

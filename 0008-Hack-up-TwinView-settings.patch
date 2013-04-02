@@ -1,0 +1,96 @@
+From e71022c353b214544565d0abf64d3ba32d79fb3a Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Wed, 25 Aug 2010 15:27:16 +1000
+Subject: [PATCH 08/14] Hack up TwinView settings.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ wacomcpl-exec |   66 ++++++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 files changed, 63 insertions(+), 3 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index 22a7afe..37a9a47 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -856,15 +856,75 @@ proc createScreenList { dev } {
+     set num_screen [ getNumScreen $dev ]
+ 
+     set numScreens($dev) $num_screen
+-    catch {
++    if { [ catch {
+ 	for { set i 0 } {$i < $numScreens($dev)} { incr i 1 } {
+ 	    set s1 [ exec xsetwacom get "$dev" SBottomX$i ]
+ 	    set s2 [ exec xsetwacom get "$dev" SBottomY$i ]
+ 	    set s3 [ exec xsetwacom get "$dev" STopX$i ]
+ 	    set s4 [ exec xsetwacom get "$dev" STopY$i ]
+-	    set getScreenInfo($dev,Screen$i) "$s1 $s2 $s3 $s4"
+ 	}
+-    } msg
++	set getScreenInfo($dev,Screen$i) "$s1 $s2 $s3 $s4"
++    } msg ] } {
++	# if the above fails, the driver only sees one screen but we
++	# pretend to have 2 (NVIDIA TwinView). The above fails because
++	# "propert offset doesn't exist" so we have to fake the actual
++	# values by querying TVResolution0/1 that was hopefully magically
++	# set by the user beforehand...
++	set tvres [ exec xsetwacom get "$dev" "TVResolution0" ]
++	set s0x [ lindex $tvres 0 ]
++	set s0y [ lindex $tvres 1 ]
++	set tvres [ exec xsetwacom get "$dev" "TVResolution1" ]
++	set s1x [ lindex $tvres 0 ]
++	set s1y [ lindex $tvres 1 ]
++
++
++	# getScreenInfo for some reason stores as bottom x/y top x/y instead
++	# of the other way round.  Usage of s() is top x/y bottom x/y though.
++	for { set i 0 } { $i < 8 } { incr i 1 } {
++	    set s($i) 0
++	}
++
++	set tv_config [ exec xsetwacom get "$dev" "TwinView" ]
++
++	switch $tv_config {
++	    "normal" { return }
++	    "horizontal" {
++		set s(2) $s0x
++		set s(3) $s0y
++		set s(4) [ expr $s0x ]
++		set s(5) 0
++		set s(6) [ expr $s0x + $s1x ]
++		set s(7) $s1y
++	    }
++	    "leftof" {
++		set s(6) $s0x
++		set s(7) $s0y
++		set s(0) [ expr $s0x ]
++		set s(1) 0
++		set s(2) [ expr $s0x + $s1x ]
++		set s(3) $s1y
++	    }
++	    "vertical" {
++		set s(2) $s0x
++		set s(3) $s0y
++		set s(4) 0
++		set s(5) [ expr $s0y ]
++		set s(6) [ expr $s0x ]
++		set s(7) [ expr $s0y + $s1y ]
++	    }
++	    "belowof" {
++		set s(6) $s0x
++		set s(7) $s0y
++		set s(0) 0
++		set s(1) [ expr $s0y ]
++		set s(2) [ expr $s0x ]
++		set s(3) [ expr $s0y + $s1y ]
++	    }
++	}
++
++	set getScreenInfo($dev,Screen0) "$s(2) $s(3) $s(0) $s(1)"
++	set getScreenInfo($dev,Screen1) "$s(6) $s(7) $s(4) $s(5)"
++    }
+ }
+ 
+ proc screenCancel {} {
+-- 
+1.7.2.2
+

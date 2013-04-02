@@ -1,0 +1,43 @@
+From 3a417259a91fb540bc42552e3e38a2e5b7a3394b Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Tue, 26 Oct 2010 14:02:43 +1000
+Subject: [PATCH 4/6] Fix parsing of TPCButton.
+
+TPCButton returns on/off now, parse correctly.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ wacomcpl-exec |   10 ++++++++--
+ 1 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index c57a94a..1d8e881 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -1102,7 +1102,10 @@ proc defaultButton {} {
+     }
+ 
+     if { ![ string compare -nocase $type "stylus" ] } {
+-	set smv $sm([ expr $getOptionDefault($device,TPCButton)+1 ])
++	set tpcbutton $getOptionDefault($device,TPCButton)
++	if { $tpcbutton == "on" } { set tpcbutton 1 }
++	if { $tpcbutton == "off" } { set tpcbutton 0 }
++	set smv $sm([ expr $tpcbutton + 1 ])
+     }
+ }
+ 
+@@ -1234,7 +1237,10 @@ proc displayMode {} {
+     }
+ 
+     if { ![ string compare -nocase $type "stylus" ] } {
+-	set smv $sm([ expr $getOption($device,TPCButton)+1 ])
++	set tpcbutton $getOption($device,TPCButton)
++	if { $tpcbutton == "on" } { set tpcbutton 1 }
++	if { $tpcbutton == "off" } { set tpcbutton 0 }
++	set smv $sm([ expr $tpcbutton + 1 ])
+ 	tk_optionMenu $currentW.f.smode smv $sm(1) $sm(2)
+ 	label $currentW.f.smodeL -text "Side Switch Mode: "
+ 	grid $currentW.f.smode -row 4 -column 4 
+-- 
+1.7.1
+

@@ -1,0 +1,44 @@
+From b963821a65b0b99472a6eeeed64123a723724828 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Fri, 27 Aug 2010 13:47:24 +1000
+Subject: [PATCH 14/14] Show an error window if the device wasn't found.
+
+during wacomcpl calibrate <devicename>
+---
+ wacomcpl-exec |   15 +++++++++++++++
+ 1 files changed, 15 insertions(+), 0 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index 1452a80..6e8ff02 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -2232,11 +2232,26 @@ proc createControls { } {
+ 
+ proc CalibrateOnly { numArg argList } {
+     global device calibration_sequence_only calibration_with_warning
++    global deviceList
+ 
+     set calibration_sequence_only 1
+     set device [ lrange $argList 1 end ]
+ 
+     createDeviceList
++
++    set found 0
++    foreach dev $deviceList {
++	if { [ string compare $dev $device ] == 0 } {
++	    set found 1
++	    break;
++	}
++    }
++
++    if { !$found } {
++	    messageWindow "Error" "\n\n Device $device not found. \n"
++	    exit 1
++    }
++
+     createScreenList $device
+     if { $numArg == 3 } {
+ 	set calibration_with_warning 1
+-- 
+1.7.2.2
+

@@ -1,0 +1,44 @@
+From 971a26d4d3d794dab4a09194b674550c75970483 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Tue, 26 Oct 2010 12:31:31 +1000
+Subject: [PATCH 2/6] Change button mapping from "Button 2" to simply 2.
+
+xsetwacom is buggy for "Button 2" mappings, so use the type that works.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ wacomcpl-exec |   10 +++++-----
+ 1 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index 6a1adf6..ccc0b17 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -1003,19 +1003,19 @@ proc updateButton {} {
+ 	switch [ $currentW.f.$i cget -text ] {
+ 	    "Left"
+ 		{ set j 1 
+-		  set v "Button 1" }
++		  set v "1" }
+ 	    "Middle"
+ 		{ set j 2 
+-		 set v "Button 2" }
++		 set v "2" }
+ 	    "Right"
+ 		{ set j 3 
+-		 set v "Button 3" }
++		 set v "3" }
+ 	    "Fourth"
+ 		{ set j 4 
+-		 set v "Button 4" }
++		 set v "4" }
+ 	    "Fifth"
+ 		{ set j 5 
+-		 set v "Button 5" }
++		 set v "5" }
+ 	    "Left Double"
+ 		{ set j $doubleClickB
+ 		 set v "DBLCLICK 1" }
+-- 
+1.7.1
+

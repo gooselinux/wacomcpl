@@ -1,0 +1,31 @@
+From fba89c42c61b51d7934fa0816cc807899d5008f1 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Wed, 27 Oct 2010 13:17:27 +1000
+Subject: [PATCH 5/6] Parse "key" and "button" as special configurations.
+
+Code assumed that stuff like that is always prefixed by CORE, but this isn't
+the case anymore.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ wacomcpl-exec |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index 1d8e881..95ef99f 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -668,7 +668,9 @@ proc getDeviceOptionProc { dev i } {
+ 		    if { ![string compare -nocase -length 8 DBLCLICK $value ] } {
+ 			set getOption($dev,$Option($j)) $doubleClickB
+ 		    }
+-		    if { ![string compare -nocase -length 4 CORE $value ] } {
++		    if { ![string compare -nocase -length 4 CORE $value ]  ||
++			 ![string compare -nocase -length 3 KEY $value ] ||
++			 ![string compare -nocase -length 6 BUTTON $value ] } {
+ 			set getOption($dev,$Option($j)) $keystrokeB
+ 			set oldKeys($Option($j)) $value
+ 		    }
+-- 
+1.7.1
+

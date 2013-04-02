@@ -1,0 +1,25 @@
+From 3fbbce4f1f849a2f4fb78893ecdbd01cb8c460aa Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Thu, 26 Aug 2010 13:49:32 +1000
+Subject: [PATCH 10/14] Work around xsetwacom xydefault bug by supplying dummy parameter.
+
+---
+ wacomcpl-exec |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index 47b7353..9414f09 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -489,7 +489,7 @@ proc startCalibration {} {
+     #
+     # Start calib sequence
+     catch {unset calibResults}
+-    exec xsetwacom set "$device" xydefault
++    exec xsetwacom set "$device" xydefault 0
+     .topleft.m configure -background "#df94df"
+     # hide the cursor
+     .topleft.m configure -cursor "center_ptr #df94df #df94df"
+-- 
+1.7.2.2
+

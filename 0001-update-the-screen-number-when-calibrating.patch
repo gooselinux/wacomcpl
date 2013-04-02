@@ -1,0 +1,38 @@
+From 99a1a06ed500c4f2fd9cdd341f1febcfdcc778ab Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Mon, 17 Jan 2011 14:35:05 +1000
+Subject: [PATCH] update the screen number when calibrating
+
+write the new screen number into wacomcplrc, otherwise the screen is offset
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ wacomcpl-exec |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index d2cbe0e..09e68f6 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -290,6 +290,7 @@ proc calibrationSequence {which xDev yDev} {
+     global xDevMin xDevMax yDevMin yDevMax
+     global calibration_sequence_only clickCheck 
+     global calibration_with_warning
++    global currentScreen numScreens
+ 
+     set scaling [exec xsetwacom get "$device" xscaling]
+     if { $scaling == 1 } {
+@@ -358,6 +359,10 @@ proc calibrationSequence {which xDev yDev} {
+ 	set yDevMin [expr $yDevMin - ($borderOffset * $heightDev / $heightX)]
+ 	set yDevMax [expr $yDevMax + ($borderOffset * $heightDev / $heightX)]
+ 
++	if { $numScreens($device) > 1} {
++	    updateWacomrc $device "Screen_No" $currentScreen
++	}
++
+ 	updateWacomrc $device topx $xDevMin
+ 	updateWacomrc $device topy $yDevMin
+ 	updateWacomrc $device bottomx $xDevMax
+-- 
+1.7.3.4
+

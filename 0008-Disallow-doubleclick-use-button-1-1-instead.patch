@@ -1,0 +1,101 @@
+From 33f6b1ed99cae16c907a047871a29744147fdc88 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Thu, 28 Oct 2010 14:51:29 +1000
+Subject: [PATCH 08/10] Disallow doubleclick, use button 1 1 instead.
+
+The rest of the code for dblclick is still in, you just can't set it
+anymore.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ wacomcpl-exec |   21 +++++++--------------
+ 1 files changed, 7 insertions(+), 14 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index 35ee7b0..35c060e 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -597,7 +597,7 @@ proc disableButtons {} {
+ # partially filled by hand??
+ proc getDeviceOptionProc { dev i } {
+     global getOption getOptionDefault Option oldKeys modeToggleB
+-    global displayToggleB ignoreButton screenToggleB doubleClickB keystrokeB 
++    global displayToggleB ignoreButton screenToggleB keystrokeB
+     global numStrips numControls numButton spName
+ 
+     for { set j 1 } { $j < [ expr $i+1 ] } { incr j 1 } {
+@@ -664,10 +664,7 @@ proc getDeviceOptionProc { dev i } {
+ 	    set getOption($dev,$Option($j)) $value
+ 	    set getOptionDefault($dev,$Option($j)) $value
+ 	    if { $match } {
+-		if { ($value > $doubleClickB) || ($value == 0) } {
+-		    if { ![string compare -nocase -length 8 DBLCLICK $value ] } {
+-			set getOption($dev,$Option($j)) $doubleClickB
+-		    }
++		if { ($value > $ignoreButton) || ($value == 0) } {
+ 		    if { ![string compare -nocase -length 4 CORE $value ]  ||
+ 			 ![string compare -nocase -length 3 KEY $value ] ||
+ 			 ![string compare -nocase -length 6 BUTTON $value ] } {
+@@ -991,7 +988,7 @@ proc displayScreenList { dev } {
+ proc updateButton {} {
+     global device getDeviceModel sm getOption spName isLCD
+     global dm currentW oldKeys numButton cKeys numStrips startS
+-    global modeToggleB ignoreButton doubleClickB keystrokeB 
++    global modeToggleB ignoreButton keystrokeB
+     global displayToggleB screenToggleB
+ 
+     set type $getDeviceModel($device,type)
+@@ -1018,9 +1015,6 @@ proc updateButton {} {
+ 	    "Fifth"
+ 		{ set j 5 
+ 		 set v "5" }
+-	    "Left Double"
+-		{ set j $doubleClickB
+-		 set v "DBLCLICK 1" }
+ 	    "Mode Toggle"
+ 		{ set j $modeToggleB
+ 		 set v "ModeToggle 1" }
+@@ -1400,7 +1394,7 @@ proc addMenu { curb } {
+     global db db1 db2 db3 db4 db5 db6 db7 db8 db9 db10 
+     global db11 db12 db13 db14 currentW device spName
+     global getOption getDeviceModel cKeys oldKeys 
+-    global keystrokeB doubleClickB screenToggleB
++    global keystrokeB screenToggleB
+     global displayToggleB ignoreButton modeToggleB
+ 
+     set model $getDeviceModel($device,model)
+@@ -1417,12 +1411,12 @@ proc addMenu { curb } {
+ 
+     if { [string compare -nocase $type "pad"] } {
+ 	set bmenu [ tk_optionMenu $currentW.f.$curb db$curb $db(1) $db(2) \
+-		$db(3) $db(4) $db(5) $db($doubleClickB) $db($modeToggleB) \
++		$db(3) $db(4) $db(5) $db($modeToggleB) \
+ 		$db($displayToggleB) $db($screenToggleB) $db($ignoreButton) ]
+ 	set i 9
+     } else {
+ 	set bmenu [ tk_optionMenu $currentW.f.$curb db$curb $db(1) $db(2) \
+-		$db(3) $db(4) $db(5) $db($doubleClickB) $db($displayToggleB) \
++		$db(3) $db(4) $db(5) $db($displayToggleB) \
+ 		$db($screenToggleB) $db($ignoreButton) ]
+ 	set i 8
+     }
+@@ -2230,7 +2224,7 @@ proc createControls { } {
+     global numScreens currentScreen cKeys spName
+     global oldKeys numStrips
+     global workingTags db dm sm wName bName numButton
+-    global doubleClickB ignoreButton displayToggleB 
++    global ignoreButton displayToggleB
+     global modeToggleB keystrokeB screenToggleB 
+ 
+     createDeviceListPanel 
+@@ -2246,7 +2240,6 @@ proc createControls { } {
+     set db(8) "Ignore"
+     set db(9) "Ignore"
+     set db(10) "Ignore"
+-    set db($doubleClickB) "Left Double"
+     set db($modeToggleB) "Mode Toggle"
+     set db($displayToggleB) "Display Toggle"
+     set db($screenToggleB) "Screen Toggle"
+-- 
+1.7.1
+

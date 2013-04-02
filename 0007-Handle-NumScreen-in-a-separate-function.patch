@@ -1,0 +1,94 @@
+From 01574c6e48d8dd0acfa504cca92246fb14aa9adc Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Wed, 25 Aug 2010 10:26:25 +1000
+Subject: [PATCH 07/14] Handle NumScreen in a separate function.
+
+xsetwacom does not have this interface anymore, so this requires some
+screwing around with xdpyinfo output, so easier to just externalise it a
+bit.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ wacomcpl-exec |   37 +++++++++++++++++++++++--------------
+ 1 files changed, 23 insertions(+), 14 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index 96223ac..22a7afe 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -614,8 +614,12 @@ proc getDeviceOptionProc { dev i } {
+ 	    continue
+ 	}
+ 
++	# NumScreens is special
++	if { ![ string compare -nocase -length 10 $Option($j) "NumScreen" ] } {
++	    set getOption($dev,NumScreen) [ getNumScreen $dev ]
++
+ 	# PressCurve is special, returns 4 values
+-	if { ![ string compare -nocase -length 10 $Option($j) "PressCurve" ] } {
++	} elseif { ![ string compare -nocase -length 10 $Option($j) "PressCurve" ] } {
+ 	    # Wacomcpl doesn't export the pressure curve as curve but merely
+ 	    # as a setting between 1 and 7 that maps into a set of ranges.
+ 	    # the default value for this is 4 (0 0 100 100).
+@@ -826,16 +830,14 @@ proc createDeviceListPanel {} {
+     bind .workingDev.list <ButtonRelease-1> updateDevice
+ }
+ 
+-proc createScreenList { dev } {
+-    global numScreens currentScreen getScreenInfo
+-
+-    # NumScreens was an exported property by the wacom driver. Values were
+-    # ScreenCount(3) for non-NVIDIA TwinView, and 2 for NV-TV. We can get
+-    # that through other means.
+-    # I don't know how to get the ScreenCount with Tk though, so we parse
+-    # the xdpyinfo output. Note that this duplicates the linuxwacom bug - on
+-    # RandR 1.2, screenInfo.numScreens is always 1 though there may be two
+-    # phys. monitors.
++# NumScreens was an exported property by the wacom driver. Values were
++# ScreenCount(3) for non-NVIDIA TwinView, and 2 for NV-TV. We can get
++# that through other means.
++# I don't know how to get the ScreenCount with Tk though, so we parse
++# the xdpyinfo output. Note that this duplicates the linuxwacom bug - on
++# RandR 1.2, screenInfo.numScreens is always 1 though there may be two
++# phys. monitors.
++proc getNumScreen { dev } {
+     set num_screen [exec xdpyinfo | grep "number of screens" | sed -e "s/number of screens:\[ \]\*//"]
+ 
+     if { $num_screen == 1 } {
+@@ -845,6 +847,14 @@ proc createScreenList { dev } {
+ 	}
+     }
+ 
++    return $num_screen
++}
++
++proc createScreenList { dev } {
++    global numScreens currentScreen getScreenInfo
++
++    set num_screen [ getNumScreen $dev ]
++
+     set numScreens($dev) $num_screen
+     catch {
+ 	for { set i 0 } {$i < $numScreens($dev)} { incr i 1 } {
+@@ -1555,8 +1565,6 @@ proc initialSet {} {
+ 	set snd "Screen$snd"
+     }
+ 
+-    if { [ string compare $numS "Not implemented" ] } { set numS 1 }
+-
+     if { $numS == 1 } {
+ 	set sn0 "Desktop" 
+ 	set sn1 "Screen0"
+@@ -1613,7 +1621,8 @@ proc initialSet {} {
+ proc updateSet {} {
+     global device currentW tvd snd tvID
+ 
+-    set numS [ exec xsetwacom get "$device" NumScreen ]
++    # See procCreateScreenList for comment to next line
++    set numS [ getNumScreen $device ]
+ 
+     if { $numS > 1 } {
+ 	set sn [ $currentW.f.snsmenu cget -text ]
+-- 
+1.7.2.2
+

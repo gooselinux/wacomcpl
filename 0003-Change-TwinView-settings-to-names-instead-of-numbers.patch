@@ -1,0 +1,48 @@
+From f2143d5fdb96b67872d0f87b628ec4c7aef160e4 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Wed, 18 Aug 2010 10:41:29 +1000
+Subject: [PATCH 03/14] Change TwinView settings to names instead of numbers.
+
+xsetwacom expects names like "none" and "horizontal", not numbers.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ wacomcpl-exec |   12 ++++++------
+ 1 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index d23b943..bf3ec60 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -1632,22 +1632,22 @@ proc updateSet {} {
+ 
+     set tv [ $currentW.f.tvmenu cget -text ]
+     if { ![ string compare $tv "None" ] } {
+-	set tv 0
++	set tv "none"
+     }
+     if { ![ string compare $tv "Xinerama" ] } {
+-	set tv 1
++	set tv "xinerama"
+     }
+     if { ![ string compare $tv "Horizontal" ] } {
+-	set tv 3
++	set tv "horizontal"
+     }
+     if { ![ string compare $tv "Vertical" ] } {
+-	set tv 2
++	set tv "vertical"
+     }
+     if { ![ string compare $tv "LeftOf" ] } {
+-	set tv 5
++	set tv "leftof"
+     }
+     if { ![ string compare $tv "AboveOf" ] } {
+-	set tv 4
++	set tv "aboveof"
+     }
+ 
+     if { $tv != $tvID } {
+-- 
+1.7.2.2
+

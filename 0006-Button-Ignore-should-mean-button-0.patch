@@ -1,0 +1,26 @@
+From 840ef786a21583429d1afd9f3dd68c8b76b988c2 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Wed, 27 Oct 2010 14:46:21 +1000
+Subject: [PATCH 6/6] Button "Ignore" should mean button 0.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ wacomcpl-exec |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index 95ef99f..a44b66a 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -1040,7 +1040,7 @@ proc updateButton {} {
+ 		 } }
+ 	    "Ignore"
+ 		{ set j $ignoreButton
+-		 set v "Button $j" }
++		 set v "0" }
+ 	}
+ 	set getOption($device,$spName($k)) $j
+ 	updateWacomrc $device $spName($k) $v
+-- 
+1.7.1
+

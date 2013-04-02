@@ -1,0 +1,32 @@
+From ae0e61c86118f0f34af298d45593041960223418 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Fri, 27 Aug 2010 13:37:28 +1000
+Subject: [PATCH 13/14] Change to use TVResolution instead of TVResolution0/1
+
+---
+ wacomcpl-exec |    7 +++----
+ 1 files changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/wacomcpl-exec b/wacomcpl-exec
+index 42e717a..1452a80 100755
+--- a/wacomcpl-exec
++++ b/wacomcpl-exec
+@@ -862,12 +862,11 @@ proc createScreenList { dev } {
+ 	# "propert offset doesn't exist" so we have to fake the actual
+ 	# values by querying TVResolution0/1 that was hopefully magically
+ 	# set by the user beforehand...
+-	set tvres [ exec xsetwacom get "$dev" "TVResolution0" ]
++	set tvres [ exec xsetwacom get "$dev" "TVResolution" ]
+ 	set s0x [ lindex $tvres 0 ]
+ 	set s0y [ lindex $tvres 1 ]
+-	set tvres [ exec xsetwacom get "$dev" "TVResolution1" ]
+-	set s1x [ lindex $tvres 0 ]
+-	set s1y [ lindex $tvres 1 ]
++	set s1x [ lindex $tvres 2 ]
++	set s1y [ lindex $tvres 3 ]
+ 
+ 	if { $s0x == 0 && $s0y == 0 && $s1x == 0 && $s1y == 0 } {
+ 	    messageWindow "Error" "\n\n Device $dev configured \n\
+-- 
+1.7.2.2
+
